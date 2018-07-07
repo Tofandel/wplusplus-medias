@@ -7,8 +7,8 @@
   "tested": "4.9.7",
   "last_updated": "2018-07-07 17:27:00",
   "upgrade_notice": "Here's why you should upgrade...",
-  "author": "Tofandel",
-  "author_homepage": "https://tukan.fr/a-propos/#adrien-foulon",
+  "author": "Adrien Foulon <tofandel@tukan.hu>",
+  "author_homepage": "https://tukangroup.com/about-us/#adrien-foulon",
   "sections": {
     "description": "A Wordpress Plugin allowing you to create easier links for your media files (Like: https://example.com/media/my-awesome-file/)",
     "installation": "",
