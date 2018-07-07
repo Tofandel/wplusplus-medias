@@ -17,7 +17,7 @@ if (!class_exists('Tofandel\WPlusPlusCore'))
  * Plugin Name: W++ Medias
  * Plugin URI: https://github.com/Tofandel/wplusplus-medias/
  * Description: W++ medias allows to create user-friendly hardlinks for medias so that the link doesn't change when the media is updated
- * Version: 1.1
+ * Version: 1.2
  * Author: Adrien Foulon <tofandel@tukan.hu>
  * Author URI: https://tukan.fr/a-propos/#adrien-foulon
  * Text Domain: wplusplusmedias
