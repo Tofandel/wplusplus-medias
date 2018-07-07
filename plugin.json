@@ -1,0 +1,29 @@
+{
+  "name": "WPlusPlus Medias",
+  "version": "1.0",
+  "download_url": "https://github.com/Tofandel/wplusplus-medias/",
+  "homepage": "",
+  "requires": "4.8",
+  "tested": "4.9.7",
+  "last_updated": "2018-07-07 17:27:00",
+  "upgrade_notice": "Here's why you should upgrade...",
+  "author": "Tofandel",
+  "author_homepage": "https://tukan.fr/a-propos/#adrien-foulon",
+  "sections": {
+    "description": "A Wordpress Plugin allowing you to create easier links for your media files (Like: https://example.com/media/my-awesome-file/)",
+    "installation": "",
+    "changelog": ""
+  },
+  "icons": {
+    "1x": "http://w-shadow.com/files/external-update-example/assets/icon-128x128.png",
+    "2x": "http://w-shadow.com/files/external-update-example/assets/icon-256x256.png"
+  },
+  "banners": {
+    "low": "http://w-shadow.com/files/external-update-example/assets/banner-772x250.png",
+    "high": "http://w-shadow.com/files/external-update-example/assets/banner-1544x500.png"
+  },
+  "rating": 100,
+  "num_ratings": 600,
+  "downloaded": 100000,
+  "active_installs": 30000
+}

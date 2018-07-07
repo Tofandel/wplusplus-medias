@@ -1,0 +1,49 @@
+{
+  "name": "tofandel/wplusplus-medias",
+  "version": "1.0",
+  "authors": [
+    {
+      "name": "Tofandel"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "description": "W++ medias is a Wordpress Plugin allowing you to create fixed links to your medias, you can update the file and the link will always stays the same",
+  "license": "Apache 2.0",
+  "keywords": [
+    "plugin",
+    "wordpress",
+    "media",
+    "link",
+    "fixed"
+  ],
+  "support": {
+    "issues": "https://github.com/tofandel/wplusplus-medias/issues"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "composer/installers": "~1.0",
+    "tgmpa/tgm-plugin-activation": ">=2.6"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Tofandel\\Medias\\": "src/"
+    }
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "rm -Rf vendor/*/*/.git",
+      "rd /s /q vendor/*/*/.git"
+    ],
+    "post-install-cmd": [
+      "rm -Rf vendor/*/*/.git",
+      "rd /s /q vendor/*/*/.git"
+    ]
+  }
+}
