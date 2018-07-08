@@ -1,8 +1,10 @@
 # W++ medias
 A Wordpress Plugin allowing you to create easier links for your media files (Like: https://example.com/media/my-awesome-file/)
 
-## Performances
+## Features
 This plugin works by creating a new post type: "wpp_media"
+
+The URL of this media will be https://yoursite.com/media/the_slug/
 
 In this post, you can add a media file and some options (force download, and filename)
 
