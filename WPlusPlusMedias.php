@@ -3,7 +3,7 @@
 namespace Tofandel;
 
 
-use Tofandel\Core\Classes\WP_Plugin;
+use Tofandel\Core\Objects\WP_Plugin;
 use Tofandel\Medias\WPP_Media;
 
 require_once __DIR__ . '/admin/tgmpa-config.php';

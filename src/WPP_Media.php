@@ -9,7 +9,7 @@
 namespace Tofandel\Medias;
 
 
-use Tofandel\Core\Classes\WP_Metabox;
+use Tofandel\Core\Objects\WP_Metabox;
 use Tofandel\Core\Traits\WP_Post_Entity;
 
 class WPP_Media {
