@@ -35,15 +35,5 @@
     "psr-4": {
       "Tofandel\\Medias\\": "src/"
     }
-  },
-  "scripts": {
-    "post-update-cmd": [
-      "rm -Rf vendor/*/*/.git",
-      "rd /s /q vendor/*/*/.git"
-    ],
-    "post-install-cmd": [
-      "rm -Rf vendor/*/*/.git",
-      "rd /s /q vendor/*/*/.git"
-    ]
   }
 }
