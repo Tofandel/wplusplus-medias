@@ -99,23 +99,23 @@ class WPP_Media {
 		$m = new WP_Metabox( 'wpp_media', 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
 		$m->setSection( 'media', array(
 			array(
-				'title'   => esc_html__( 'Media File', $WPlusPlusMedias->text_domain ),
-				'desc'    => esc_html__( 'Choose or upload a file from the media library', $WPlusPlusMedias->text_domain ),
+				'title'   => esc_html__( 'Media File', $WPlusPlusMedias->getTextDomain() ),
+				'desc'    => esc_html__( 'Choose or upload a file from the media library', $WPlusPlusMedias->getTextDomain() ),
 				'id'      => 'media-file',
 				'type'    => 'media',
 				'repeat'  => false,
 				'default' => ''
 			),
 			array(
-				'title'   => esc_html__( 'File name', $WPlusPlusMedias->text_domain ),
-				'desc'    => esc_html__( 'This will be the name of the file when downloaded', $WPlusPlusMedias->text_domain ),
+				'title'   => esc_html__( 'File name', $WPlusPlusMedias->getTextDomain() ),
+				'desc'    => esc_html__( 'This will be the name of the file when downloaded', $WPlusPlusMedias->getTextDomain() ),
 				'id'      => 'file-name',
 				'type'    => 'text',
 				'default' => ''
 			),
 			array(
-				'title'   => esc_html__( 'Force download', $WPlusPlusMedias->text_domain ),
-				'desc'    => esc_html__( 'This will tell the browser the file should be downloaded', $WPlusPlusMedias->text_domain ),
+				'title'   => esc_html__( 'Force download', $WPlusPlusMedias->getTextDomain() ),
+				'desc'    => esc_html__( 'This will tell the browser the file should be downloaded', $WPlusPlusMedias->getTextDomain() ),
 				'id'      => 'force-download',
 				'type'    => 'switch',
 				'default' => false
@@ -126,25 +126,25 @@ class WPP_Media {
 	public static function post_type_options() {
 		global $WPlusPlusMedias;
 		$labels = array(
-			'name'               => _x( 'Linked Medias', 'post type general name', $WPlusPlusMedias->text_domain ),
-			'singular_name'      => _x( 'Linked Media', 'post type singular name', $WPlusPlusMedias->text_domain ),
-			'menu_name'          => _x( 'Linked Medias', 'admin menu', $WPlusPlusMedias->text_domain ),
-			'name_admin_bar'     => _x( 'Linked Media', 'add new on admin bar', $WPlusPlusMedias->text_domain ),
-			'add_new'            => _x( 'Add New', 'media', $WPlusPlusMedias->text_domain ),
-			'add_new_item'       => __( 'Add New Linked Media', $WPlusPlusMedias->text_domain ),
-			'new_item'           => __( 'New Link', $WPlusPlusMedias->text_domain ),
-			'edit_item'          => __( 'Edit Link', $WPlusPlusMedias->text_domain ),
-			'view_item'          => __( 'View Linked Media', $WPlusPlusMedias->text_domain ),
-			'all_items'          => __( 'Linked Medias', $WPlusPlusMedias->text_domain ),
-			'search_items'       => __( 'Search Links', $WPlusPlusMedias->text_domain ),
-			//'parent_item_colon'  => __( 'Parent Link:', $WPlusPlusMedias->text_domain ),
-			'not_found'          => __( 'No Linked Media found.', $WPlusPlusMedias->text_domain ),
-			'not_found_in_trash' => __( 'No Linked Media found in Trash.', $WPlusPlusMedias->text_domain )
+			'name'               => _x( 'Linked Medias', 'post type general name', $WPlusPlusMedias->getTextDomain() ),
+			'singular_name'      => _x( 'Linked Media', 'post type singular name', $WPlusPlusMedias->getTextDomain() ),
+			'menu_name'          => _x( 'Linked Medias', 'admin menu', $WPlusPlusMedias->getTextDomain() ),
+			'name_admin_bar'     => _x( 'Linked Media', 'add new on admin bar', $WPlusPlusMedias->getTextDomain() ),
+			'add_new'            => _x( 'Add New', 'media', $WPlusPlusMedias->getTextDomain() ),
+			'add_new_item'       => __( 'Add New Linked Media', $WPlusPlusMedias->getTextDomain() ),
+			'new_item'           => __( 'New Link', $WPlusPlusMedias->getTextDomain() ),
+			'edit_item'          => __( 'Edit Link', $WPlusPlusMedias->getTextDomain() ),
+			'view_item'          => __( 'View Linked Media', $WPlusPlusMedias->getTextDomain() ),
+			'all_items'          => __( 'Linked Medias', $WPlusPlusMedias->getTextDomain() ),
+			'search_items'       => __( 'Search Links', $WPlusPlusMedias->getTextDomain() ),
+			//'parent_item_colon'  => __( 'Parent Link:', $WPlusPlusMedias->getTextDomain() ),
+			'not_found'          => __( 'No Linked Media found.', $WPlusPlusMedias->getTextDomain() ),
+			'not_found_in_trash' => __( 'No Linked Media found in Trash.', $WPlusPlusMedias->getTextDomain() )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Description.', $WPlusPlusMedias->text_domain ),
+			'description'        => __( 'Description.', $WPlusPlusMedias->getTextDomain() ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
