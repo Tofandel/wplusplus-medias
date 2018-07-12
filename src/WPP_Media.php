@@ -51,7 +51,8 @@ class WPP_Media {
 			'post_status'    => 'publish',
 		) );
 
-		$new_rules = "<IfModule mod_rewrite.c>\n" . "RewriteEngine On\n" . "RewriteBase /\n" . "</IfModule>\n";
+		$pos       = strpos( $rules, "RewriteRule ^index\.php$ - [L]\n" );
+		$new_rules = "";
 		foreach ( $medias as $post ) {
 			$attachment = get_post_meta( $post->ID, 'media-file', true );
 			if ( empty( $attachment['url'] ) ) {
@@ -78,9 +79,8 @@ class WPP_Media {
 			preg_match( "#https?:\/\/[^\/]*.\/(.*)#", get_permalink( $post->ID ), $matches );
 			$path = trailingslashit( $matches[1] );
 
-			$new_rules .= "<IfModule mod_rewrite.c>\n" .
-			              "\tRewriteRule ^" . $path . "?$ " . $redir_path . " [L]\n" .
-			              "</IfModule>\n";
+			$rules = substr_replace( $rules, "RewriteRule ^" . $path . "?$ " . $redir_path . " [L]\n", $pos, 0 );
+
 			$new_rules .= "<IfModule mod_headers.c>\n" .
 			              "\t<If \"%{THE_REQUEST} =~ m#\s/+".$path."?[?\s]#\">\n" .
 			              "\t\tHeader set Content-type: \"" . $mime . "\"\n" .
