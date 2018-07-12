@@ -14,14 +14,6 @@
     "installation": "",
     "changelog": ""
   },
-  "icons": {
-    "1x": "http://w-shadow.com/files/external-update-example/assets/icon-128x128.png",
-    "2x": "http://w-shadow.com/files/external-update-example/assets/icon-256x256.png"
-  },
-  "banners": {
-    "low": "http://w-shadow.com/files/external-update-example/assets/banner-772x250.png",
-    "high": "http://w-shadow.com/files/external-update-example/assets/banner-1544x500.png"
-  },
   "rating": 100,
   "num_ratings": 600,
   "downloaded": 100000,
