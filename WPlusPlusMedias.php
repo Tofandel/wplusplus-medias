@@ -53,7 +53,7 @@ class WPlusPlusMedias extends WP_Plugin {
 	/**
 	 * Add redux framework menus, sub-menus and settings page in this function
 	 */
-	public function reduxOptions() {
+	public function reduxConfig() {
 	}
 }
 
