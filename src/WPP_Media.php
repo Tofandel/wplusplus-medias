@@ -32,36 +32,38 @@ class WPP_Media implements SubmoduleInterface {
 		add_action( 'redux_loaded', [ $this, 'metabox' ] );
 		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
 		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
-		add_filter( 'single_template', [ $this, 'template' ] );
+		//add_filter( 'single_template', [ $this, 'template' ] );
 		add_action( 'template_redirect', [ $this, 'advanced_template' ], 1 );
+		add_filter( 'post_type_link', [ $this, 'remove_slug' ], 10, 2 );
+	}
+
+	public function remove_slug( $post_link, $post ) {
+
+		if ( $this->postType() != $post->post_type || 'publish' != $post->post_status ) {
+			return $post_link;
+		}
+
+		$cslug = wpp_slugify( get_post_meta( $post->ID, 'custom-slug', true ), false );
+
+		$post_link = str_replace( '/' . $post->post_type . '/', trailingslashit( '/' . $cslug ), $post_link );
+
+		return $post_link;
 	}
 
 	public function advanced_template() {
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-			$query = new \WP_Query( array(
+			$posts = get_posts( array(
 				'post_type'      => 'wpp_media',
 				'posts_per_page' => - 1,
-				'post_status'    => 'publish',
-				'meta_query'     => array(
-					'relation' => 'AND',
-					array(
-						'key'     => 'custom-slug',
-						'compare' => 'EXISTS'
-					),
-					array(
-						'key'     => 'custom-slug',
-						'compare' => '!=',
-						'value'   => 'media'
-					),
-				)
+				'post_status'    => 'publish'
 			) );
-			foreach ( $query->posts as $media ) {
+			foreach ( $posts as $media ) {
 				/**
 				 * @var \WP_Post $media
 				 */
-				$path = trailingslashit( trailingslashit( ltrim( get_post_meta( $media->ID, 'custom-slug', true ), '/' ) ) . $media->post_name );
-
-				var_dump( $path, ltrim( $_SERVER['REQUEST_URI'], '/' ) );
+				$perma = get_permalink( $media );
+				preg_match( "#https?:\/\/[^\/]*.\/(.*)#", $perma, $matches );
+				$path = $matches[1];
 				if ( preg_match( '#^' . $path . '?$#i', ltrim( $_SERVER['REQUEST_URI'], '/' ) ) ) {
 					global $post;
 					$post = $media;
@@ -121,13 +123,11 @@ class WPP_Media implements SubmoduleInterface {
 
 			$mime       = get_post_mime_type( $attachment['id'] );
 			$redir_path = get_attached_file( $attachment['id'] );
-
-			if ( ! empty( $cslug = get_post_meta( $post->ID, 'custom-slug', true ) ) ) {
-				$path = trailingslashit( trailingslashit( $cslug ) . $post->post_name );
-			} else {
-				preg_match( "#https?:\/\/[^\/]*.\/(.*)#", get_permalink( $post->ID ), $matches );
-				$path = trailingslashit( $matches[1] );
-			}
+			$perma      = get_permalink( $post->ID );
+			preg_match( "#https?:\/\/[^\/]*.\/(.*)#", $perma, $matches );
+			$path = trailingslashit( $matches[1] );
+			//$base = str_replace(site_url(), '', home_url());
+			//$path = ltrim(trailingslashit($base).trailingslashit($cslug).trailingslashit($perma), '/');
 
 			$rules = substr_replace( $rules, "RewriteRule ^" . $path . "?$ " . $redir_path . " [L]\n", $pos, 0 );
 
@@ -152,6 +152,7 @@ class WPP_Media implements SubmoduleInterface {
 				'desc'    => esc_html__( 'Choose or upload a file from the media library', $this->getTextDomain() ),
 				'id'      => 'media-file',
 				'type'    => 'media',
+				'mode'    => false,
 				'repeat'  => false,
 				'default' => ''
 			),
@@ -206,7 +207,7 @@ class WPP_Media implements SubmoduleInterface {
 			'show_ui'            => true,
 			'show_in_menu'       => 'upload.php',
 			'query_var'          => true,
-			'rewrite'            => array( 'slug' => 'media' ),
+			'rewrite'            => array( 'slug' => static::StaticPostType() ),
 			'capability_type'    => 'post',
 			'has_archive'        => true,
 			'hierarchical'       => false,
