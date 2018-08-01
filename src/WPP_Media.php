@@ -17,9 +17,45 @@ class WPP_Media {
 
 	protected function __init() {
 		self::metabox();
-		add_action( 'save_post', [ $this, 'flush_htaccess' ], 999, 2 );
+		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
 		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
 		add_filter( 'single_template', [ $this, 'template' ] );
+		add_action( 'template_redirect', [ $this, 'advanced_template' ], 1 );
+	}
+
+	public function advanced_template() {
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$query = new \WP_Query( array(
+				'post_type'      => 'wpp_media',
+				'posts_per_page' => - 1,
+				'post_status'    => 'publish',
+				'meta_query'     => array(
+					'relation' => 'AND',
+					array(
+						'key'     => 'custom-slug',
+						'compare' => 'EXISTS'
+					),
+					array(
+						'key'     => 'custom-slug',
+						'compare' => '!=',
+						'value'   => 'media'
+					),
+				)
+			) );
+			foreach ( $query->posts as $media ) {
+				/**
+				 * @var \WP_Post $media
+				 */
+				$path = trailingslashit( trailingslashit( ltrim( get_post_meta( $media->ID, 'custom-slug', true ), '/' ) ) . $media->post_name );
+
+				var_dump( $path, ltrim( $_SERVER['REQUEST_URI'], '/' ) );
+				if ( preg_match( '#^' . $path . '?$#i', ltrim( $_SERVER['REQUEST_URI'], '/' ) ) ) {
+					global $post;
+					$post = $media;
+					include __DIR__ . '/../templates/single-wpp_media.php';
+				}
+			}
+		}
 	}
 
 	public function template( $single ) {
@@ -34,14 +70,8 @@ class WPP_Media {
 		return $single;
 	}
 
-	/**
-	 * @param $post_id
-	 * @param \WP_Post $post
-	 */
-	public function flush_htaccess( $post_id, $post ) {
-		if ( $post->post_type == $this->postType() ) {
-			flush_rewrite_rules( true );
-		}
+	public function flush_htaccess() {
+		flush_rewrite_rules( true );
 	}
 
 	public function output_htaccess( $rules ) {
@@ -54,6 +84,9 @@ class WPP_Media {
 		$pos       = strpos( $rules, "RewriteRule ^index\.php$ - [L]\n" );
 		$new_rules = "";
 		foreach ( $medias as $post ) {
+			/**
+			 * @var \WP_Post $post
+			 */
 			$attachment = get_post_meta( $post->ID, 'media-file', true );
 			if ( empty( $attachment['url'] ) ) {
 				continue;
@@ -76,13 +109,17 @@ class WPP_Media {
 			$mime       = get_post_mime_type( $attachment['id'] );
 			$redir_path = get_attached_file( $attachment['id'] );
 
-			preg_match( "#https?:\/\/[^\/]*.\/(.*)#", get_permalink( $post->ID ), $matches );
-			$path = trailingslashit( $matches[1] );
+			if ( ! empty( $cslug = get_post_meta( $post->ID, 'custom-slug', true ) ) ) {
+				$path = trailingslashit( trailingslashit( $cslug ) . $post->post_name );
+			} else {
+				preg_match( "#https?:\/\/[^\/]*.\/(.*)#", get_permalink( $post->ID ), $matches );
+				$path = trailingslashit( $matches[1] );
+			}
 
 			$rules = substr_replace( $rules, "RewriteRule ^" . $path . "?$ " . $redir_path . " [L]\n", $pos, 0 );
 
 			$new_rules .= "<IfModule mod_headers.c>\n" .
-			              "\t<If \"%{THE_REQUEST} =~ m#\s/+".$path."?[?\s]#\">\n" .
+			              "\t<If \"%{THE_REQUEST} =~ m#\s/+" . $path . "?[?\s]#\">\n" .
 			              "\t\tHeader set Content-type: \"" . $mime . "\"\n" .
 			              "\t\tHeader set Content-Disposition: \"" . $force_download . ";filename='" . $filename . "'\"\n" .
 			              "\t</If>\n" .
@@ -119,7 +156,14 @@ class WPP_Media {
 				'id'      => 'force-download',
 				'type'    => 'switch',
 				'default' => false
-			)
+			),
+			array(
+				'title'   => esc_html__( 'Custom Endpoint', $WPlusPlusMedias->getTextDomain() ),
+				'desc'    => esc_html__( 'This will be the endpoint where you can access the file, this setting might override existing pages so be careful', $WPlusPlusMedias->getTextDomain() ),
+				'id'      => 'custom-slug',
+				'type'    => 'text',
+				'default' => 'media'
+			),
 		) );
 	}
 

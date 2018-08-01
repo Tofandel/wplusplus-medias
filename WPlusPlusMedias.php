@@ -2,30 +2,30 @@
 
 namespace Tofandel;
 
-
 use Tofandel\Core\Objects\WP_Plugin;
 use Tofandel\Medias\WPP_Media;
 
-require_once __DIR__ . '/admin/tgmpa-config.php';
+require_once __DIR__ . '/plugins/tgmpa-config.php';
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
-if (!class_exists('Tofandel\WPlusPlusCore'))
+if ( ! class_exists( WPlusPlusCore::class ) ) {
 	return;
+}
 
 /**
  * Plugin Name: W++ Medias
  * Plugin URI: https://github.com/Tofandel/wplusplus-medias/
  * Description: W++ medias allows to create user-friendly hardlinks for medias so that the link doesn't change when the media is updated
- * Version: 1.1
+ * Version: 1.3
  * Author: Adrien Foulon <tofandel@tukan.hu>
  * Author URI: https://tukan.fr/a-propos/#adrien-foulon
  * Text Domain: wplusplusmedias
  * Domain Path: /languages/
- * Download Url: https://github.com/Tofandel/wplusplus-medias/
  * WC tested up to: 4.8
  */
 class WPlusPlusMedias extends WP_Plugin {
+	protected $repo_url = 'https://github.com/Tofandel/wplusplus-medias/';
 
 	/**
 	 * Add the tables and settings and any plugin variable specifics here
@@ -54,6 +54,12 @@ class WPlusPlusMedias extends WP_Plugin {
 	 * Add redux framework menus, sub-menus and settings page in this function
 	 */
 	public function reduxConfig() {
+	}
+
+	/**
+	 * Called function if a plugin is uninstalled
+	 */
+	protected function uninstall() {
 	}
 }
 
