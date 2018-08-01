@@ -2,7 +2,6 @@
 
 namespace Tofandel;
 
-use Tofandel\Core\Objects\ReduxConfig;
 use Tofandel\Core\Objects\WP_Plugin;
 use Tofandel\Medias\WPP_Media;
 
@@ -32,10 +31,9 @@ class WPlusPlusMedias extends WP_Plugin {
 	 * Add the tables and settings and any plugin variable specifics here
 	 *
 	 * @return void
-	 * @throws \ReflectionException
 	 */
 	public function definitions() {
-		WPP_Media::__init__();
+		$this->setSubModule( new WPP_Media( $this ) );
 	}
 
 	/**
@@ -55,10 +53,6 @@ class WPlusPlusMedias extends WP_Plugin {
 	 * Add redux framework menus, sub-menus and settings page in this function
 	 */
 	public function reduxConfig() {
-		new ReduxConfig( $this, array(
-			'menu_type' => 'hidden',
-			'compiler'  => false
-		) );
 	}
 
 	/**

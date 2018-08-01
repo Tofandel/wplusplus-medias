@@ -9,14 +9,27 @@
 namespace Tofandel\Medias;
 
 
+use Tofandel\Core\Interfaces\SubModule as SubmoduleInterface;
+use Tofandel\Core\Interfaces\WP_Plugin;
 use Tofandel\Core\Objects\WP_Metabox;
+use Tofandel\Core\Traits\SubModule;
 use Tofandel\Core\Traits\WP_Post_Entity;
 
-class WPP_Media {
-	use WP_Post_Entity;
+class WPP_Media implements SubmoduleInterface {
+	use SubModule {
+		__construct as SubModuleConstruct;
+	}
+	use WP_Post_Entity {
+		__construct as PostEntityConstruct;
+	}
+
+	public function __construct( WP_Plugin &$parent = null ) {
+		$this->SubModuleConstruct( $parent );
+		self::__init__();
+	}
 
 	protected function __init() {
-		add_action( 'redux_loaded', [ self::class, 'metabox' ] );
+		add_action( 'redux_loaded', [ $this, 'metabox' ] );
 		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
 		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
 		add_filter( 'single_template', [ $this, 'template' ] );
@@ -131,35 +144,34 @@ class WPP_Media {
 	}
 
 
-	public static function metabox() {
-		global $WPlusPlusMedias;
+	public function metabox() {
 		$m = new WP_Metabox( 'wpp_media', 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
 		$m->setSection( 'media', array(
 			array(
-				'title'   => esc_html__( 'Media File', $WPlusPlusMedias->getTextDomain() ),
-				'desc'    => esc_html__( 'Choose or upload a file from the media library', $WPlusPlusMedias->getTextDomain() ),
+				'title'   => esc_html__( 'Media File', $this->getTextDomain() ),
+				'desc'    => esc_html__( 'Choose or upload a file from the media library', $this->getTextDomain() ),
 				'id'      => 'media-file',
 				'type'    => 'media',
 				'repeat'  => false,
 				'default' => ''
 			),
 			array(
-				'title'   => esc_html__( 'File name', $WPlusPlusMedias->getTextDomain() ),
-				'desc'    => esc_html__( 'This will be the name of the file when downloaded', $WPlusPlusMedias->getTextDomain() ),
+				'title'   => esc_html__( 'File name', $this->getTextDomain() ),
+				'desc'    => esc_html__( 'This will be the name of the file when downloaded', $this->getTextDomain() ),
 				'id'      => 'file-name',
 				'type'    => 'text',
 				'default' => ''
 			),
 			array(
-				'title'   => esc_html__( 'Force download', $WPlusPlusMedias->getTextDomain() ),
-				'desc'    => esc_html__( 'This will tell the browser the file should be downloaded', $WPlusPlusMedias->getTextDomain() ),
+				'title'   => esc_html__( 'Force download', $this->getTextDomain() ),
+				'desc'    => esc_html__( 'This will tell the browser the file should be downloaded', $this->getTextDomain() ),
 				'id'      => 'force-download',
 				'type'    => 'switch',
 				'default' => false
 			),
 			array(
-				'title'   => esc_html__( 'Custom Endpoint', $WPlusPlusMedias->getTextDomain() ),
-				'desc'    => esc_html__( 'This will be the endpoint where you can access the file, this setting might override existing pages so be careful', $WPlusPlusMedias->getTextDomain() ),
+				'title'   => esc_html__( 'Custom Endpoint', $this->getTextDomain() ),
+				'desc'    => esc_html__( 'This will be the endpoint where you can access the file, this setting might override existing pages so be careful', $this->getTextDomain() ),
 				'id'      => 'custom-slug',
 				'type'    => 'text',
 				'default' => 'media'
