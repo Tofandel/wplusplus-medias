@@ -16,7 +16,7 @@ class WPP_Media {
 	use WP_Post_Entity;
 
 	protected function __init() {
-		self::metabox();
+		add_action( 'redux_loaded', [ self::class, 'metabox' ] );
 		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
 		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
 		add_filter( 'single_template', [ $this, 'template' ] );
