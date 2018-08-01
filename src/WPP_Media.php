@@ -28,7 +28,7 @@ class WPP_Media implements SubmoduleInterface {
 		self::__init__();
 	}
 
-	protected function __init() {
+	public function actionsAndFilters() {
 		add_action( 'redux_loaded', [ $this, 'metabox' ] );
 		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
 		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
@@ -215,5 +215,8 @@ class WPP_Media implements SubmoduleInterface {
 		);
 
 		return $args;
+	}
+
+	protected function __init() {
 	}
 }
