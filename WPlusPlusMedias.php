@@ -2,6 +2,7 @@
 
 namespace Tofandel;
 
+use Tofandel\Core\Objects\ReduxConfig;
 use Tofandel\Core\Objects\WP_Plugin;
 use Tofandel\Medias\WPP_Media;
 
@@ -53,6 +54,7 @@ class WPlusPlusMedias extends WP_Plugin {
 	 * Add redux framework menus, sub-menus and settings page in this function
 	 */
 	public function reduxConfig() {
+		new ReduxConfig( $this->redux_opt_name );
 	}
 
 	/**
