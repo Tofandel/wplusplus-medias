@@ -43,11 +43,15 @@ class WPP_Media implements SubmoduleInterface {
 			return $post_link;
 		}
 
-		$cslug = wpp_slugify( get_post_meta( $post->ID, 'custom-slug', true ), false );
+		static $cache;
 
-		$post_link = str_replace( '/' . $post->post_type . '/', trailingslashit( '/' . $cslug ), $post_link );
+		if ( ! isset( $cache[ $post_link ] ) ) {
+			$cslug = wpp_slugify( redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'custom-slug', 'media' ), false );
 
-		return $post_link;
+			$cache[ $post_link ] = str_replace( '/' . $post->post_type . '/', trailingslashit( '/' . $cslug ), $post_link );
+		}
+
+		return $cache[ $post_link ];
 	}
 
 	public function advanced_template() {
@@ -102,13 +106,13 @@ class WPP_Media implements SubmoduleInterface {
 			/**
 			 * @var \WP_Post $post
 			 */
-			$attachment = get_post_meta( $post->ID, 'media-file', true );
+			$attachment = redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'media-file' );
 			if ( empty( $attachment['url'] ) ) {
 				continue;
 			}
 
-			$filename       = get_post_meta( $post->ID, 'file-name', true );
-			$force_download = get_post_meta( $post->ID, 'force-download', true ) ? 'attachment' : 'inline';
+			$filename       = redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'file-name' );
+			$force_download = redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'force-download', false ) ? 'attachment' : 'inline';
 
 			$ext = pathinfo( $attachment['url'], PATHINFO_EXTENSION );
 			if ( ! empty( $filename ) ) {
@@ -145,7 +149,7 @@ class WPP_Media implements SubmoduleInterface {
 
 
 	public function metabox() {
-		$m = new WP_Metabox( 'wpp_media', 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
+		$m = new WP_Metabox( $this->parent->getReduxOptName(), 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
 		$m->setSection( 'media', array(
 			array(
 				'title'   => esc_html__( 'Media File', $this->getTextDomain() ),
