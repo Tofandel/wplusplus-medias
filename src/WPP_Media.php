@@ -46,7 +46,7 @@ class WPP_Media implements SubmoduleInterface {
 		static $cache;
 
 		if ( ! isset( $cache[ $post_link ] ) ) {
-			$cslug = wpp_slugify( redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'custom-slug', 'media' ), false );
+			$cslug = wpp_slugify( WP_Metabox::get_meta_value( $post->ID, 'custom-slug' ), false );
 
 			$cache[ $post_link ] = str_replace( '/' . $post->post_type . '/', trailingslashit( '/' . $cslug ), $post_link );
 		}
@@ -106,13 +106,13 @@ class WPP_Media implements SubmoduleInterface {
 			/**
 			 * @var \WP_Post $post
 			 */
-			$attachment = redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'media-file' );
+			$attachment = WP_Metabox::get_meta_value( $post->ID, 'media-file' );
 			if ( empty( $attachment['url'] ) ) {
 				continue;
 			}
 
-			$filename       = redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'file-name' );
-			$force_download = redux_post_meta( $this->parent->getReduxOptName(), $post->ID, 'force-download', false ) ? 'attachment' : 'inline';
+			$filename       = WP_Metabox::get_meta_value( $post->ID, 'file-name' );
+			$force_download = WP_Metabox::get_meta_value( $post->ID, 'force-download' ) ? 'attachment' : 'inline';
 
 			$ext = pathinfo( $attachment['url'], PATHINFO_EXTENSION );
 			if ( ! empty( $filename ) ) {
