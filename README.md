@@ -15,5 +15,6 @@ As such the file can be accessed extremely fast since you will never hit php or 
 ## Fallback
 If .htaccess is not supported (Because you use nginx for example)
 
-Then a wordpress template will be used to display the file and add the specified headers
+Then a wordpress template will be used to display the file and add the specified headers.
+
 Just keep in mind this method is a bit slower so don't use it to embed images into a page
