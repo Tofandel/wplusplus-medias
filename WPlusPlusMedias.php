@@ -2,7 +2,7 @@
 
 namespace Tofandel;
 
-use Tofandel\Core\Objects\ReduxConfig;
+use Tofandel\Core\Modules\ReduxFramework;
 use Tofandel\Core\Objects\WP_Plugin;
 use Tofandel\Medias\WPP_Media;
 
@@ -18,7 +18,7 @@ if ( ! class_exists( WPlusPlusCore::class ) ) {
  * Plugin Name: W++ Medias
  * Plugin URI: https://github.com/Tofandel/wplusplus-medias/
  * Description: W++ medias allows to create user-friendly hardlinks for medias so that the link doesn't change when the media is updated
- * Version: 1.4
+ * Version: 1.5
  * Author: Adrien Foulon <tofandel@tukan.hu>
  * Author URI: https://tukan.fr/a-propos/#adrien-foulon
  * Text Domain: wplusplusmedias
@@ -50,11 +50,8 @@ class WPlusPlusMedias extends WP_Plugin {
 	protected function upgrade( $last_version ) {
 	}
 
-	/**
-	 * Add redux framework menus, sub-menus and settings page in this function
-	 */
-	public function reduxConfig() {
-		new ReduxConfig( $this->redux_opt_name );
+	public function reduxInit( ReduxFramework $framework ) {
+		$framework->setArgs( array() );
 	}
 
 	/**
