@@ -24,6 +24,7 @@ namespace Tofandel\Medias;
 
 use Tofandel\Core\Interfaces\SubModule as SubmoduleInterface;
 use Tofandel\Core\Interfaces\WP_Plugin;
+use Tofandel\Core\Modules\ReduxFramework;
 use Tofandel\Core\Objects\WP_Metabox;
 use Tofandel\Core\Traits\SubModule;
 use Tofandel\Core\Traits\WP_Post_Entity;
@@ -42,7 +43,7 @@ class WPP_Media implements SubmoduleInterface {
 	}
 
 	public function actionsAndFilters() {
-		add_action( 'redux_loaded', [ $this, 'metabox' ] );
+		add_action( 'wpp_redux_' . $this->parent->getReduxOptName() . '_config', [ $this, 'metabox' ] );
 		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
 		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
 		//add_filter( 'single_template', [ $this, 'template' ] );
@@ -160,10 +161,15 @@ class WPP_Media implements SubmoduleInterface {
 		return $new_rules . $rules;
 	}
 
-
-	public function metabox() {
-		$m = new WP_Metabox( $this->parent->getReduxOptName(), 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
-		$m->setSection( 'media', array(
+	/**
+	 * @param ReduxFramework $config
+	 *
+	 * @throws \Exception
+	 */
+	public function metabox(ReduxFramework $config) {
+		//$m = new WP_Metabox( $this->parent->getReduxOptName(), 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
+		$config->setMetabox('media', 'Media', self::StaticPostType(), 'normal', 'high');
+		$config->setMetaboxSection('media', array(
 			array(
 				'title'   => esc_html__( 'Media File', $this->getTextDomain() ),
 				'desc'    => esc_html__( 'Choose or upload a file from the media library', $this->getTextDomain() ),
@@ -233,8 +239,5 @@ class WPP_Media implements SubmoduleInterface {
 		);
 
 		return $args;
-	}
-
-	protected function __init() {
 	}
 }
