@@ -49,6 +49,33 @@ class WPP_Media implements SubmoduleInterface {
 		//add_filter( 'single_template', [ $this, 'template' ] );
 		add_action( 'template_redirect', [ $this, 'advanced_template' ], 1 );
 		add_filter( 'post_type_link', [ $this, 'remove_slug' ], 10, 2 );
+		add_action( 'manage_' . $this->postType() . '_posts_custom_column', [ $this, 'custom_columns_data' ], 10, 2 );
+		add_filter( 'manage_' . $this->postType() . '_posts_columns', [ $this, 'custom_columns' ], 10, 1 );
+	}
+
+	function custom_columns( $columns ) {
+		$columns = wpp_array_insert_after( $columns, 'cb', array(
+			'featured_image' => __( 'Thumbnail', $this->getTextDomain() ),
+		) );
+		$columns = wpp_array_insert_after( $columns, 'title', array(
+			'link' => __( 'Link', $this->getTextDomain() ),
+		) );
+
+		return $columns;
+	}
+
+	function custom_columns_data( $column, $post_id ) {
+		switch ( $column ) {
+			case 'featured_image':
+				$attachment = WP_Metabox::get_meta_value( $post_id, 'media-file' );
+				echo wp_get_attachment_image( $attachment['id'] );
+				break;
+			case 'link':
+				$perma = get_the_permalink( $post_id );
+				$short = wpp_remove_domain_from_url( $perma );
+				echo "<a href='$perma'>$short</a>";
+				break;
+		}
 	}
 
 	public function remove_slug( $post_link, $post ) {
@@ -166,10 +193,10 @@ class WPP_Media implements SubmoduleInterface {
 	 *
 	 * @throws \Exception
 	 */
-	public function metabox(ReduxFramework $config) {
+	public function metabox( ReduxFramework $config ) {
 		//$m = new WP_Metabox( $this->parent->getReduxOptName(), 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
-		$config->setMetabox('media', 'Media', self::StaticPostType(), 'normal', 'high');
-		$config->setMetaboxSection('media', array(
+		$config->setMetabox( 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
+		$config->setMetaboxSection( 'media', array(
 			array(
 				'title'   => esc_html__( 'Media File', $this->getTextDomain() ),
 				'desc'    => esc_html__( 'Choose or upload a file from the media library', $this->getTextDomain() ),

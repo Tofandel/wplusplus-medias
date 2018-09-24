@@ -63,7 +63,7 @@ class WPlusPlusMedias extends WP_Plugin {
 	}
 
 	public function reduxInit( ReduxFramework $framework ) {
-		$framework->setArgs( array() );
+		//$framework->setArgs( array() );
 	}
 
 	/**
