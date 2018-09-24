@@ -5,7 +5,7 @@ Donate link: https://tukangroup.com/webshop/premium-plugins/wplusplus-apidae/
 Requires at least: 4.7
 Tested up to: 4.9.8
 Requires PHP: 5.5
-Stable tag: v1.8
+Stable tag: v1.9
 License: Apache License Version 2.0
 License URI: http://www.apache.org/licenses/LICENSE-2.0
 
@@ -23,10 +23,11 @@ When the post is saved, the .htaccess will be regenerated the Wordpress way with
 As such the file can be accessed extremely fast since you will never hit php or wordpress when requesting it
 
 == Installation ==
-TODO
+Just activate the plugin and you will find a new menu in "Medias > Linked Medias" there you can add your linked medias and that's all there is, no weird option panel no configuration needed
 
 == Frequently Asked Questions ==
-TODO
+Q: Can I set my linked media to be at the root ? (Eg: https://myawesome.site/my_media/)
+A: Yes you can by leaving the custom endpoint empty in the Link settings
 
-== Upgrade Notice ==
-TODO
+Q: What file types are supported ?
+A: Any file type supported by the Wordpress Library (You can add support for your files using the 'upload_mimes' filter or using the plugin WP Extra File Types)
