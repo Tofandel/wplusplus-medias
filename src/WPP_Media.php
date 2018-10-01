@@ -192,7 +192,7 @@ class WPP_Media implements SubmoduleInterface {
 			              "\t<If \"%{THE_REQUEST} =~ m#\s/+" . $path . "?[?\s]#\">\n" .
 			              "\t\tHeader set Content-type: \"" . $mime . "\"\n" .
 			              "\t\tHeader set Content-Disposition: \"" . $force_download . ";filename='" . $filename . "'\"\n" .
-			              "\t\tHeader set ETag: \"" . $etag . "'\"\n" .
+			              "\t\tHeader set ETag: \"" . $etag . "\"\n" .
 			              "\t</If>\n" .
 			              "</IfModule>\n";
 		}
