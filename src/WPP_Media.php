@@ -51,6 +51,13 @@ class WPP_Media implements SubmoduleInterface {
 		add_filter( 'post_type_link', [ $this, 'remove_slug' ], 10, 2 );
 		add_action( 'manage_' . $this->postType() . '_posts_custom_column', [ $this, 'custom_columns_data' ], 10, 2 );
 		add_filter( 'manage_' . $this->postType() . '_posts_columns', [ $this, 'custom_columns' ], 10, 1 );
+		add_action( 'redux/metabox/wpp_media/saved', [ $this, 'update_etag' ], 10, 3 );
+	}
+
+	public function update_etag( $post, $updated, $diff ) {
+		if ( $updated && array_key_exists( 'media-file', $diff ) ) {
+			update_post_meta( $post->ID, 'etag', time() );
+		}
 	}
 
 	function custom_columns( $columns ) {
@@ -154,6 +161,11 @@ class WPP_Media implements SubmoduleInterface {
 
 			$filename       = WP_Metabox::get_meta_value( $post->ID, 'file-name' );
 			$force_download = WP_Metabox::get_meta_value( $post->ID, 'force-download' ) ? 'attachment' : 'inline';
+			$etag           = WP_Metabox::get_meta_value( $post->ID, 'etag' );
+			if ( empty( $etag ) ) {
+				$etag = time();
+				update_post_meta( $post->ID, 'etag', $etag );
+			}
 
 			$ext = pathinfo( $attachment['url'], PATHINFO_EXTENSION );
 			if ( ! empty( $filename ) ) {
@@ -180,6 +192,7 @@ class WPP_Media implements SubmoduleInterface {
 			              "\t<If \"%{THE_REQUEST} =~ m#\s/+" . $path . "?[?\s]#\">\n" .
 			              "\t\tHeader set Content-type: \"" . $mime . "\"\n" .
 			              "\t\tHeader set Content-Disposition: \"" . $force_download . ";filename='" . $filename . "'\"\n" .
+			              "\t\tHeader set Etag: \"" . $etag . "'\"\n" .
 			              "\t</If>\n" .
 			              "</IfModule>\n";
 		}
