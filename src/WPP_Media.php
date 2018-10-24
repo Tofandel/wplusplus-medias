@@ -169,7 +169,7 @@ class WPP_Media implements SubmoduleInterface {
 
 			$ext = pathinfo( $attachment['url'], PATHINFO_EXTENSION );
 			if ( ! empty( $filename ) ) {
-				if ( strpos( '.', $filename ) == false && ! empty( $ext ) ) {
+				if ( strpos( '.', $filename ) === false && ! empty( $ext ) ) {
 					$filename .= '.' . $ext;
 				}
 			} elseif ( ! empty( $ext ) ) {
@@ -177,6 +177,8 @@ class WPP_Media implements SubmoduleInterface {
 			} else {
 				$filename = $attachment['title'];
 			}
+			//Remove dangerous quotes
+			$filename = str_replace( '"', "", $filename );
 
 			$mime       = get_post_mime_type( $attachment['id'] );
 			$redir_path = get_attached_file( $attachment['id'] );
@@ -191,7 +193,7 @@ class WPP_Media implements SubmoduleInterface {
 			$new_rules .= "<IfModule mod_headers.c>\n" .
 			              "\t<If \"%{THE_REQUEST} =~ m#\s/+" . $path . "?[?\s]#\">\n" .
 			              "\t\tHeader set Content-type: \"" . $mime . "\"\n" .
-			              "\t\tHeader set Content-Disposition: \"" . $force_download . ";filename='" . $filename . "'\"\n" .
+			              "\t\tHeader set Content-Disposition: \"" . $force_download . ";filename=\\\"" . $filename . "\\\"\"\n" .
 			              "\t\tHeader set ETag: \"" . $etag . "\"\n" .
 			              "\t</If>\n" .
 			              "</IfModule>\n";
@@ -220,11 +222,16 @@ class WPP_Media implements SubmoduleInterface {
 				'default' => ''
 			),
 			array(
-				'title'   => esc_html__( 'File name', $this->getTextDomain() ),
-				'desc'    => esc_html__( 'This will be the name of the file when downloaded', $this->getTextDomain() ),
-				'id'      => 'file-name',
-				'type'    => 'text',
-				'default' => ''
+				'title'    => esc_html__( 'File name', $this->getTextDomain() ),
+				'desc'     => esc_html__( 'This will be the name of the file when downloaded (The extension is automatic)', $this->getTextDomain() ),
+				'id'       => 'file-name',
+				'type'     => 'text',
+				'default'  => '',
+				'validate' => 'str_replace',
+				'str'      => array(
+					'search'      => '"',
+					'replacement' => ''
+				)
 			),
 			array(
 				'title'   => esc_html__( 'Force download', $this->getTextDomain() ),
