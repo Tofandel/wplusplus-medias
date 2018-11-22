@@ -21,57 +21,42 @@
 
 namespace Tofandel\Medias;
 
-
-use Tofandel\Core\Interfaces\SubModule as SubmoduleInterface;
-use Tofandel\Core\Interfaces\WP_Plugin;
 use Tofandel\Core\Modules\ReduxFramework;
 use Tofandel\Core\Objects\WP_Metabox;
-use Tofandel\Core\Traits\SubModule;
-use Tofandel\Core\Traits\WP_Post_Entity;
+use Tofandel\Core\Objects\WP_Post_Entity;
 
-class WPP_Media implements SubmoduleInterface {
-	use SubModule {
-		__construct as SubModuleConstruct;
-	}
-	use WP_Post_Entity {
-		__construct as PostEntityConstruct;
-	}
+abstract class WPP_Media extends WP_Post_Entity {
 
-	public function __construct( WP_Plugin &$parent = null ) {
-		$this->SubModuleConstruct( $parent );
-		self::__StaticInit();
-	}
-
-	public function actionsAndFilters() {
-		add_action( 'wpp_redux_' . $this->parent->getReduxOptName() . '_config', [ $this, 'metabox' ] );
-		add_action( 'redux/metabox/' . $this->postType() . '/saved', [ $this, 'flush_htaccess' ], 999, 0 );
-		add_filter( 'mod_rewrite_rules', [ $this, 'output_htaccess' ], 999, 1 );
-		//add_filter( 'single_template', [ $this, 'template' ] );
-		add_action( 'template_redirect', [ $this, 'advanced_template' ], 1 );
-		add_filter( 'post_type_link', [ $this, 'remove_slug' ], 10, 2 );
-		add_action( 'manage_' . $this->postType() . '_posts_custom_column', [ $this, 'custom_columns_data' ], 10, 2 );
-		add_filter( 'manage_' . $this->postType() . '_posts_columns', [ $this, 'custom_columns' ], 10, 1 );
-		add_action( 'redux/metabox/wpp_media/saved', [ $this, 'update_etag' ], 10, 3 );
+	public static function actionsAndFilters() {
+		add_action( 'wpp/redux/' . self::$parent->getReduxOptName() . '/config', [ self::class, 'metabox' ] );
+		add_action( 'redux/metabox/' . self::StaticPostType() . '/saved', [ self::class, 'flush_htaccess' ], 999, 0 );
+		add_filter( 'mod_rewrite_rules', [ self::class, 'output_htaccess' ], 999, 1 );
+		//add_filter( 'single_template', [ self::class, 'template' ] );
+		add_action( 'template_redirect', [ self::class, 'advanced_template' ], 1 );
+		add_filter( 'post_type_link', [ self::class, 'remove_slug' ], 10, 2 );
+		add_action( 'manage_' . self::StaticPostType() . '_posts_custom_column', [ self::class, 'custom_columns_data' ], 10, 2 );
+		add_filter( 'manage_' . self::StaticPostType() . '_posts_columns', [ self::class, 'custom_columns' ], 10, 1 );
+		add_action( 'redux/metabox/' . self::$parent->getReduxOptName() . '/saved', [ self::class, 'update_etag' ], 10, 3 );
 	}
 
-	public function update_etag( $post, $updated, $diff ) {
+	public static function update_etag( $post, $updated, $diff ) {
 		if ( $updated && array_key_exists( 'media-file', $diff ) ) {
 			update_post_meta( $post->ID, 'etag', time() );
 		}
 	}
 
-	function custom_columns( $columns ) {
+	public static function custom_columns( $columns ) {
 		$columns = wpp_array_insert_after( $columns, 'cb', array(
-			'featured_image' => __( 'Thumbnail', $this->getTextDomain() ),
+			'featured_image' => __( 'Thumbnail', self::getTextDomain() ),
 		) );
 		$columns = wpp_array_insert_after( $columns, 'title', array(
-			'link' => __( 'Link', $this->getTextDomain() ),
+			'link' => __( 'Link', self::getTextDomain() ),
 		) );
 
 		return $columns;
 	}
 
-	function custom_columns_data( $column, $post_id ) {
+	public static function custom_columns_data( $column, $post_id ) {
 		switch ( $column ) {
 			case 'featured_image':
 				$attachment = WP_Metabox::get_meta_value( $post_id, 'media-file' );
@@ -85,9 +70,9 @@ class WPP_Media implements SubmoduleInterface {
 		}
 	}
 
-	public function remove_slug( $post_link, $post ) {
+	public static function remove_slug( $post_link, $post ) {
 
-		if ( $this->postType() != $post->post_type || 'publish' != $post->post_status ) {
+		if ( self::StaticPostType() != $post->post_type || 'publish' != $post->post_status ) {
 			return $post_link;
 		}
 
@@ -102,7 +87,7 @@ class WPP_Media implements SubmoduleInterface {
 		return $cache[ $post_link ];
 	}
 
-	public function advanced_template() {
+	public static function advanced_template() {
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 			$posts = get_posts( array(
 				'post_type'      => 'wpp_media',
@@ -125,10 +110,10 @@ class WPP_Media implements SubmoduleInterface {
 		}
 	}
 
-	public function template( $single ) {
+	public static function template( $single ) {
 		global $post;
 
-		if ( $post->post_type == $this->postType() ) {
+		if ( $post->post_type == self::StaticPostType() ) {
 			if ( file_exists( __DIR__ . '/../templates/single-wpp_media.php' ) ) {
 				return __DIR__ . '/../templates/single-wpp_media.php';
 			}
@@ -137,11 +122,11 @@ class WPP_Media implements SubmoduleInterface {
 		return $single;
 	}
 
-	public function flush_htaccess() {
+	public static function flush_htaccess() {
 		flush_rewrite_rules( true );
 	}
 
-	public function output_htaccess( $rules ) {
+	public static function output_htaccess( $rules ) {
 		$medias = get_posts( array(
 			'post_type'      => 'wpp_media',
 			'posts_per_page' => - 1,
@@ -208,13 +193,13 @@ class WPP_Media implements SubmoduleInterface {
 	 *
 	 * @throws \Exception
 	 */
-	public function metabox( ReduxFramework $config ) {
-		//$m = new WP_Metabox( $this->parent->getReduxOptName(), 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
+	public static function metabox( ReduxFramework $config ) {
+		//$m = new WP_Metabox( self::parent->getReduxOptName(), 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
 		$config->setMetabox( 'media', 'Media', self::StaticPostType(), 'normal', 'high' );
 		$config->setMetaboxSection( 'media', array(
 			array(
-				'title'   => esc_html__( 'Media File', $this->getTextDomain() ),
-				'desc'    => esc_html__( 'Choose or upload a file from the media library', $this->getTextDomain() ),
+				'title'   => esc_html__( 'Media File', self::getTextDomain() ),
+				'desc'    => esc_html__( 'Choose or upload a file from the media library', self::getTextDomain() ),
 				'id'      => 'media-file',
 				'type'    => 'media',
 				'mode'    => false,
@@ -222,8 +207,8 @@ class WPP_Media implements SubmoduleInterface {
 				'default' => ''
 			),
 			array(
-				'title'    => esc_html__( 'File name', $this->getTextDomain() ),
-				'desc'     => esc_html__( 'This will be the name of the file when downloaded (The extension is automatic)', $this->getTextDomain() ),
+				'title'    => esc_html__( 'File name', self::getTextDomain() ),
+				'desc'     => esc_html__( 'This will be the name of the file when downloaded (The extension is automatic)', self::getTextDomain() ),
 				'id'       => 'file-name',
 				'type'     => 'text',
 				'default'  => '',
@@ -234,15 +219,15 @@ class WPP_Media implements SubmoduleInterface {
 				)
 			),
 			array(
-				'title'   => esc_html__( 'Force download', $this->getTextDomain() ),
-				'desc'    => esc_html__( 'This will tell the browser the file should be downloaded', $this->getTextDomain() ),
+				'title'   => esc_html__( 'Force download', self::getTextDomain() ),
+				'desc'    => esc_html__( 'This will tell the browser the file should be downloaded', self::getTextDomain() ),
 				'id'      => 'force-download',
 				'type'    => 'switch',
 				'default' => false
 			),
 			array(
-				'title'   => esc_html__( 'Custom Endpoint', $this->getTextDomain() ),
-				'desc'    => esc_html__( 'This will be the endpoint where you can access the file, this setting might override existing pages so be careful', $this->getTextDomain() ),
+				'title'   => esc_html__( 'Custom Endpoint', self::getTextDomain() ),
+				'desc'    => esc_html__( 'This will be the endpoint where you can access the file, this setting might override existing pages so be careful', self::getTextDomain() ),
 				'id'      => 'custom-slug',
 				'type'    => 'text',
 				'default' => 'media'
@@ -251,27 +236,26 @@ class WPP_Media implements SubmoduleInterface {
 	}
 
 	public static function post_type_options() {
-		global $WPlusPlusMedias;
 		$labels = array(
-			'name'               => _x( 'Linked Medias', 'post type general name', $WPlusPlusMedias->getTextDomain() ),
-			'singular_name'      => _x( 'Linked Media', 'post type singular name', $WPlusPlusMedias->getTextDomain() ),
-			'menu_name'          => _x( 'Linked Medias', 'admin menu', $WPlusPlusMedias->getTextDomain() ),
-			'name_admin_bar'     => _x( 'Linked Media', 'add new on admin bar', $WPlusPlusMedias->getTextDomain() ),
-			'add_new'            => _x( 'Add New', 'media', $WPlusPlusMedias->getTextDomain() ),
-			'add_new_item'       => __( 'Add New Linked Media', $WPlusPlusMedias->getTextDomain() ),
-			'new_item'           => __( 'New Link', $WPlusPlusMedias->getTextDomain() ),
-			'edit_item'          => __( 'Edit Link', $WPlusPlusMedias->getTextDomain() ),
-			'view_item'          => __( 'View Linked Media', $WPlusPlusMedias->getTextDomain() ),
-			'all_items'          => __( 'Linked Medias', $WPlusPlusMedias->getTextDomain() ),
-			'search_items'       => __( 'Search Links', $WPlusPlusMedias->getTextDomain() ),
-			//'parent_item_colon'  => __( 'Parent Link:', $WPlusPlusMedias->getTextDomain() ),
-			'not_found'          => __( 'No Linked Media found.', $WPlusPlusMedias->getTextDomain() ),
-			'not_found_in_trash' => __( 'No Linked Media found in Trash.', $WPlusPlusMedias->getTextDomain() )
+			'name'               => _x( 'Linked Medias', 'post type general name', self::getTextDomain() ),
+			'singular_name'      => _x( 'Linked Media', 'post type singular name', self::getTextDomain() ),
+			'menu_name'          => _x( 'Linked Medias', 'admin menu', self::getTextDomain() ),
+			'name_admin_bar'     => _x( 'Linked Media', 'add new on admin bar', self::getTextDomain() ),
+			'add_new'            => _x( 'Add New', 'media', self::getTextDomain() ),
+			'add_new_item'       => __( 'Add New Linked Media', self::getTextDomain() ),
+			'new_item'           => __( 'New Link', self::getTextDomain() ),
+			'edit_item'          => __( 'Edit Link', self::getTextDomain() ),
+			'view_item'          => __( 'View Linked Media', self::getTextDomain() ),
+			'all_items'          => __( 'Linked Medias', self::getTextDomain() ),
+			'search_items'       => __( 'Search Links', self::getTextDomain() ),
+			//'parent_item_colon'  => __( 'Parent Link:', self::getTextDomain() ),
+			'not_found'          => __( 'No Linked Media found.', self::getTextDomain() ),
+			'not_found_in_trash' => __( 'No Linked Media found in Trash.', self::getTextDomain() )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Description.', $WPlusPlusMedias->getTextDomain() ),
+			'description'        => __( 'Description.', self::getTextDomain() ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,

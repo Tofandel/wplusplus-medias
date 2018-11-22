@@ -46,7 +46,7 @@ class WPlusPlusMedias extends WP_Plugin {
 	 * @return void
 	 */
 	public function definitions() {
-		$this->setSubModule( new WPP_Media( $this ) );
+		$this->setSubModule( WPP_Media::class );
 	}
 
 	/**
