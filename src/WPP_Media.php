@@ -12,13 +12,6 @@
  * limitations under the License.
  */
 
-/**
- * Created by PhpStorm.
- * User: Adrien
- * Date: 28/05/2018
- * Time: 11:40
- */
-
 namespace Tofandel\Medias;
 
 use Tofandel\Core\Modules\ReduxFramework;
