@@ -1,3 +1,6 @@
+# Warning
+This repository has been moved to https://gitlab.tukan.hu/Tofandel/wplusplus-medias
+
 # W++ medias
 A Wordpress Plugin allowing you to create easier links for your media files (Like: https://example.com/media/my-awesome-file/)
 
